@@ -108,7 +108,7 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
                     ? tabs_labels.demo
                     : website_status?.currencies_config?.[account?.currency]?.name ?? account?.currency,
                 icon: icon,
-                isVirtual: showAsReal && isOriginalVirtual ? false : isOriginalVirtual,
+                isVirtual: isOriginalVirtual,
                 isActive: account?.loginid === activeAccount?.loginid,
             };
         });
@@ -139,23 +139,8 @@ const AccountSwitcher = observer(({ activeAccount }: TAccountSwitcher) => {
     }, [modifiedAccountList]);
 
     const modifiedVRTCRAccountList = useMemo(() => {
-        if (showAsReal) {
-            const demoAccount = accountList?.find(acc => acc.is_virtual);
-            if (demoAccount) {
-                const balanceData = all_accounts_balance?.accounts?.[demoAccount.loginid];
-                return [{
-                    ...demoAccount,
-                    balance: addComma((10000)?.toFixed(getDecimalPlaces(demoAccount.currency)) ?? '0'),
-                    currencyLabel: tabs_labels.demo,
-                    icon: <CurrencyIcon currency={demoAccount?.currency?.toLowerCase()} isVirtual />,
-                    isVirtual: true,
-                    isActive: demoAccount?.loginid === activeAccount?.loginid,
-                } as TModifiedAccount];
-            }
-            return [];
-        }
         return modifiedAccountList?.filter(account => account.is_virtual) ?? [];
-    }, [modifiedAccountList, showAsReal, accountList, all_accounts_balance, activeAccount?.loginid]);
+    }, [modifiedAccountList]);
 
     const switchAccount = async (loginId: number) => {
         const loginIdStr = loginId.toString();

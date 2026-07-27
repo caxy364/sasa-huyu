@@ -11,7 +11,6 @@ import { useStore } from '@/hooks/useStore';
 import useTMB from '@/hooks/useTMB';
 import { handleOidcAuthFailure } from '@/utils/auth-utils';
 import { getBalanceSwapState } from '@/utils/balance-swap-utils';
-import { isCustomDemoIconActive, setCustomDemoIconActive } from '@/utils/custom-demo-icon-utils';
 import { startNewLogin } from '@/auth/NewDerivAuth';
 import { StandaloneCircleUserRegularIcon } from '@deriv/quill-icons/Standalone';
 
@@ -43,8 +42,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const [isNewLoginLoading, setIsNewLoginLoading] = useState(false);
     const [newLoginError, setNewLoginError] = useState('');
     const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const [headerTripleClickCount, setHeaderTripleClickCount] = useState(0);
-    const headerTripleClickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const { data: activeAccount } = useActiveAccount({ allBalanceData: client?.all_accounts_balance });
     const { accounts, getCurrency, is_virtual, account_list } = client ?? {};
@@ -189,22 +186,6 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         });
     }, []);
 
-    const handleHeaderTripleClick = useCallback(() => {
-        const newCount = headerTripleClickCount + 1;
-        if (headerTripleClickTimeoutRef.current) {
-            clearTimeout(headerTripleClickTimeoutRef.current);
-        }
-        if (newCount >= 3) {
-            setCustomDemoIconActive(!isCustomDemoIconActive());
-            setHeaderTripleClickCount(0);
-        } else {
-            setHeaderTripleClickCount(newCount);
-            headerTripleClickTimeoutRef.current = setTimeout(() => {
-                setHeaderTripleClickCount(0);
-            }, 500);
-        }
-    }, [headerTripleClickCount]);
-
     const handleAdminModalClose = () => {
         setIsAdminModalOpen(false);
     };
@@ -337,7 +318,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
         >
             <Wrapper variant='left'>
                 <AppLogo onMenuClick={handleMenuClick} />
-                <div className='powered-by-deriv-header' ref={whatsappDropdownRef} onClick={handleHeaderTripleClick}>
+                <div className='powered-by-deriv-header' ref={whatsappDropdownRef}>
                     <img
                         src='/makoti-logo.jpg'
                         alt='MAKOTI TRADERS logo'
